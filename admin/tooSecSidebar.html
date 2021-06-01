@@ -1,0 +1,29 @@
+
+
+<input type="file" id="uploadVid" style="display: none;" />
+<div class="flex flex-shrink bg-gray-900">
+    <button class="m-3 w-10 h-10 bg-indigo-900 rounded-full" type="button" onclick="document.getElementById('uploadVid').click();">
+        <img src="/global/images/assets/plus.png" class="object-fill" />
+    </button>
+</div>
+
+<script>
+    $("#uploadVid").on("change", async (e) => {
+      
+        let date = new Date()
+        form = new FormData();
+        console.log(e.target.files);
+        form.append("data", e.target.files[0]);
+        form.append("date", date);
+    
+        try{
+            let response = await fetch("/api/videos", {
+                method: 'POST',
+                body: form
+            })
+            console.log(response);
+        }catch(exception){
+            console.log(exception);
+        }
+    });
+    </script>

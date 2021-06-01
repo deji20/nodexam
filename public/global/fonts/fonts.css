@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'Adam';
+    src: url("/global/fonts/ADAM.otf");
+}
+@font-face {
+    font-family: 'BioRhyme';
+    src: url("/global/fonts/BioRhyme-Regular.ttf");
+}
+@font-face {
+    font-family: 'SourceSans';
+    src: url("/global/fonts/SourceSansPro-Light.ttf");
+}
+body{
+    font-family: "Adam";
+    letter-spacing: 2px;
+}
+
+p, label{
+    font-family: "SourceSans";
+}

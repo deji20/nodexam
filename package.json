@@ -1,0 +1,25 @@
+{
+    "name": "website",
+    "description": "node Exams Website",
+    "authors": "Deji ehinlanwo",
+    "version": "1.0.0",
+    "main": "app.js",
+    "scripts": {
+        "start-dev": "nodemon --ext js,html app.js",
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "formdata": "^0.10.4",
+        "mongodb": "^3.6.7",
+        "multer": "^1.4.2",
+        "socket.io": "^4.1.2"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.2.5",
+        "postcss": "^8.2.9",
+        "postcss-cli": "^8.3.1",
+        "postcss-import": "^14.0.1",
+        "tailwindcss": "^2.0.4"
+    }
+}
