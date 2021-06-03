@@ -5,27 +5,31 @@ const socketIO = require("socket.io");
 module.exports = (server) => {
     io = socketIO(server);
 
+
     const tooSec = io.of("/toosec");
     tooSec.on("connection", async (socket) => {
-
         let amount = 1;
         let offset = -amount;
-        socket.on("nextVid", async () => {
-            offset += amount;
+        socket.on("nextVid", async (videoIndex) => {
+            offset = videoIndex ?? (offset += amount);
+            console.log(offset);
             let videos;
         
-            if(!videos || !videos.length){
+            !videos && (videos = await videoRepo.getBatch(amount, offset));
+            if(!videos.length){
+                offset = 0;
                 videos = await videoRepo.getBatch(amount, offset);
-                if(!videos.length){
-                    offset = 0;
-                    videos = await videoRepo.getBatch(amount, offset);
-                }
             }
+    
             let vid;
             videos.length && (vid = videos.shift());
             vid && socket.emit("video", {video: vid.videoData.buffer, id: vid._id.toHexString(), duration: vid.duration});
-            vid = null;
         })
-        socket.emit("getBatch", (await videoRepo.getBatch(10, 0)).map((vid) => { return {thumbnail: vid.thumbnail.buffer, id: vid._id.toHexString()}; }));
-    })
+        async function getBatch(){
+            socket.emit("getBatch", (await videoRepo.getBatch(10, 0)).map((vid) => {
+                return {thumbnail: vid.thumbnail.buffer, id: vid._id.toHexString()}; 
+            }));   
+        }
+        getBatch();
+    })    
 }

@@ -1,13 +1,24 @@
 class VideoApi{
     constructor(){
-        this.base = "/projects/toosec/api/videos";
+        this.base = "/api/videos";
+    }
+    async create(form){
+        try{
+            let response = await fetch(`${this.base}`, {
+                method: 'POST',
+                body: form
+            });
+            return response;
+        }catch(exception){
+            throw exception;
+        }
     }
     async getAll(){
         try{
             let result = await fetch(`${this.base}`);
             return result;
         }catch(exception){
-            console.log(exception);
+            throw exception;
         }
     }
     async getById(id){
@@ -15,15 +26,29 @@ class VideoApi{
             let result = await fetch(`${this.base}/${id}`);
             return result;
         }catch(exception){
-            console.log(exception);
+            throw exception;
         }
-    }
+    };
+
+    async delete(id){
+        try{
+            let result = await fetch(`${this.base}/${id}`, {
+                method: 'DELETE'
+            });
+            console.log(result);
+            return result;
+        }catch(exception){
+            console.log(exception);
+            throw exception;
+        }
+    };
+
     async getStream(id){
         try{
             let result = await fetch(`${this.base}/${id}/stream`);
-            console.log(result)
+            return result;
         }catch(exception){
-            console.log(exception)
+            throw exception;
         }
     }
 
@@ -32,7 +57,7 @@ class VideoApi{
             let result = await fetch(`${this.base}/${id}?amount=${amount}&offset=${offset}`);
             return result;
         }catch(exception){
-            console.log(exception);
+            throw exception;
         }
     }
 }

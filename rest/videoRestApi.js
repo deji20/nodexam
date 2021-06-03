@@ -5,7 +5,6 @@ const upload = require("multer")();
 const videoHandler = require("../util/videoManipulator");
 const videoModel = require("../models/videoModel");
 const videoRepo = require("../repositories/videoRepository");
-const { getBatch } = require("../repositories/videoRepository");
 
 const FRAGMENT_SIZE = 2000;
 
@@ -24,12 +23,10 @@ router.get("/", async (req, res) => {
 router.post("/", upload.single("data"), async (req, res) => {
     try{
         let videoData = await videoHandler.transcoder(req.file.buffer, FRAGMENT_SIZE);
-        console.log("video Created");
         let duration  = await videoHandler.getDuration(req.file.buffer);
-        console.log("duration logged", duration.toString());
         let thumbnail = await videoHandler.getThumbnail(req.file.buffer);
-        console.log("thumbnail created");
         let date = req.body.date;
+
         videoRepo.create(new videoModel(date, duration, videoData, thumbnail));
         res.status(200).send();
     }catch(exception){
