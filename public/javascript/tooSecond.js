@@ -1,37 +1,44 @@
 let streamPlayer;
 let videoApi = new VideoApi(); 
 
-$(document).ready(async () => {
-    streamPlayer = new StreamPlayer("#videoPlayer");
-    $("#videoPlayer").on("click", (e) => {
-        player = e.currentTarget;
-        $(player).removeAttr("muted")
-        player.volume = 0.6;
-    })
-});
-
 //create and animate thumbnails
+thumbnailIndex = 0;
 function addThumbnails(elements){
-    let scroller = $("#videoScroller");
+    let referenceElement = $("#vidRef");
     let scrollElem = elements.map((element) => {
-        let thumbnail = $(`<div class="thumbnail cursor-pointer inline-block p-2" value="${element.id}"> <img class="transition-all inline rounded-md shadow-2xl duration-1000 h-44", src="data:image/png;base64,${toBase64(element.thumbnail)}"/> </div>`);
-        thumbnail.on("click", (e) => {
-            console.log($(e.currentTarget).attr("value"));
-        });
+        let index = thumbnailIndex;
+        let thumbnail = $("<div>", {
+                "class":"cursor-pointer inline-block p-2"
+            }).append(
+                $("<img>", {
+                    "class":"thumbnail transition-all inline shadow-2xl rounded-md duration-1000 h-44",
+                    id: element.id,
+                    value: element.id,
+                    src:`data:image/png;base64,${toBase64(element.thumbnail)}`
+                })
+            ).on("click", (e) => {
+                socket.emit("nextVid", index);
+            });
+        thumbnailIndex++
         return thumbnail;
     });
-    scroller.append(scrollElem);
+    referenceElement.before(scrollElem);
 }
 
 //manipulates the chosen thumbnail bringing focus on it 
 let scrollWithFocus = true;
-function toggleFocusThumbnail(index){
-    let images = $(".thumbnail").children("img")
-    //sets focus on the appropriate image wrapping around to the start like the videos, if their are no more images
-    let focusImage = images[index % images.length]; 
-    scrollWithFocus && focusImage.scrollIntoView({behavior: "smooth", block: "nearest", inline: "center"});
-    images.removeClass("h-48")
-    $(focusImage).addClass("h-48")
+function toggleFocusThumbnail(videoInfo){
+    let thumbnails = $(".thumbnail");
+    let videoScroller = $("#videoScroller");
+    let dateDisplay = $("#dateDisplay");
+    //sets focus on the appropriate image
+    let playing = $("#"+videoInfo.id);
+    dateDisplay.text(new Date(videoInfo.date).toLocaleDateString());
+    scrollWithFocus && videoScroller.animate({scrollLeft: (playing[0].offsetLeft - (videoScroller.width()/2 - playing.width()/2))});
+    playing[0].offsetLeft + videoScroller.width() > $("#vidRef")[0].offsetLeft && socket.emit("getBatch");
+    //resizes focused thumbnail
+    thumbnails.removeClass("h-48 shadow-inner")
+    playing.addClass("h-48 shadow-inner")
 }
 
 function toBase64(arr) {
@@ -58,3 +65,29 @@ $.fn.shake = function (speed) {
     });
 };
 
+let socket = io("/toosec");
+socket.on("getBatch", addThumbnails);
+
+let queue = 0;
+$(document).ready( async () => {
+    streamPlayer = new StreamPlayer("#videoPlayer");
+
+    $("#videoPlayer").on("click", (e) => {
+        player = e.currentTarget;
+        $(player).removeAttr("muted")
+        player.volume = 0.6;
+    })
+
+    streamPlayer.addEventListener("ready", () => {
+        socket.emit("getBatch");
+        socket.emit("nextVid");
+        //requests new video when buffer is nearing end
+        streamPlayer.addEventListener("runningOut", () => socket.emit("nextVid"));
+    
+        socket.on("video", (video) => streamPlayer.addVideo(video));
+        streamPlayer.addEventListener("ended", () => {console.log("ended");socket.emit("nextVid")})
+        streamPlayer.addEventListener("videoChanged", () => {
+            toggleFocusThumbnail(streamPlayer.currentVideo);
+        })
+    });
+})

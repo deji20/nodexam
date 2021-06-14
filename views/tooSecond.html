@@ -2,16 +2,23 @@
 <script src="/javascript/streamPlayer.js"></script>
 <script src="/javascript/videoApi.js"></script>
 <script src="/javascript/tooSecond.js"></script>
-<script src="/javascript/streaming.js"></script>
+
 <div class="flex flex-col w-full bg-gray-800">
     <div class="w-full flex">
         <div class="flex max-h-96 w-full">
             <video id="videoPlayer" class="max-h-full w-full object-scale-down" autoplay muted></video>
         </div>
     </div>
-    <div class="flex flex-row w-full h-full justify-center items-center">
-        <div id="videoScroller" class="w-full whitespace-nowrap overflow-x-scroll overflow-y-hidden shadow-2xl items-center py-5 bg-opacity-30 bg-black">
-            <div class="inline-block h-full w-full "></div>
+    {admin}
+    <div class="relative">
+    <div class="absolute top-0 w-full center">
+        <p id="dateDisplay"></p>
+    </div>
+    </div>
+    <div id="scrollWrapper" class="flex flex-row w-full h-full justify-center items-center">
+        <div id="videoScroller" class="w-full whitespace-nowrap overflow-x-scroll overflow-y-hidden shadow-2xl items-center py-5 bg-opacity-60 bg-black">
+            <div class="inline-block h-full w-1/2 "></div>
+            <div id="vidRef" class="inline-block h-full w-1/2 "></div>
         </div>
     </div>
 </div>

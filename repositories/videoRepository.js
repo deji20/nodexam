@@ -1,4 +1,5 @@
 const dbConnection = require(`../database/mongoDatabase`).client;
+const {ObjectId} = require("mongodb");
 const {Duplex, Readable} = require("stream");
 
 class videoRepository{
@@ -11,11 +12,12 @@ class videoRepository{
         return result.ops[0];
     }
     async delete(videoId){
-        await this.collection.deleteOne({_id: videoId})
+        let result = await this.collection.deleteOne({_id: ObjectId(videoId)})
+        return result.deletedCount;
     }
 
     async update(video){
-        return await this.collection.updateOne({_id:video._id}, video); 
+        return await this.collection.updateOne({_id:ObjectId(video._id)}, video); 
     }
 
     async getBatch(amount, offset = 0, elements){
@@ -25,7 +27,7 @@ class videoRepository{
         return await this.collection.find(elements).sort({date:1}).toArray();
     }
     async getById(videoId){
-        return await this.collection.find({_id: videoId}).toArray();
+        return await this.collection.find({_id: ObjectId(videoId)}).toArray();
     }
     async getStream(videoId){
         try{

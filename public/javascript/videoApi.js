@@ -60,4 +60,17 @@ class VideoApi{
             throw exception;
         }
     }
+    async getVideoDate(videoFile){
+        let form = new FormData();
+        form.append("video", videoFile)
+        try{
+            let result = await fetch(`${this.base}/date`, {
+                method:"POST",
+                body: form
+            });
+            return result;
+        }catch(exception){
+            throw exception;
+        }
+    }
 }

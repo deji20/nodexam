@@ -33,6 +33,18 @@ functions.getDuration = (inputBuffer) => new Promise((resolve, reject) => {
     child.stdout.on('end', () => resolve(Number.parseFloat(Buffer.concat(outputBuffer).toString())));
     inputStream.pipe(child.stdin);
 })
+functions.getDate = (inputBuffer) => new Promise((resolve, reject) => {
+    let inputStream = stream.Readable.from(inputBuffer);
+    let outputBuffer = [];
+    const child = spawn("ffprobe", ["-v", "quiet", "pipe:0", "-print_format", "json", "-show_entries", "stream=index,codec_type:stream_tags=creation_time:format_tags=creation_time"]);
+
+    child.stdin.on("error", () => console.log("caught error"));
+    inputStream.on("error", () => console.log("caught error"));
+
+    child.stdout.on('data', (data) => outputBuffer.push(data));
+    child.stdout.on('end', () => resolve(JSON.parse(Buffer.concat(outputBuffer).toString()).format?.tags?.creation_time));
+    inputStream.pipe(child.stdin);
+})
 
 functions.getThumbnail = (inputBuffer) => new Promise((resolve, reject) => {
     let inputStream = stream.Readable.from(inputBuffer);

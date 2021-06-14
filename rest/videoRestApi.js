@@ -6,6 +6,8 @@ const videoHandler = require("../util/videoManipulator");
 const videoModel = require("../models/videoModel");
 const videoRepo = require("../repositories/videoRepository");
 
+const security = require("../security/securityMiddleware");
+
 const FRAGMENT_SIZE = 2000;
 
 router.get("/:id", async (req, res) => {
@@ -19,6 +21,16 @@ router.get("/", async (req, res) => {
     res.send({videos: await videoRepo.getAll({})})
 });
 
+router.use("/", security);
+router.post("/date", upload.single("video"), async (req, res) => {
+    try{
+        let date = await videoHandler.getDate(req.file.buffer);
+        res.status(200).send(date.toString());
+    }catch(exception){
+        console.log(exception);
+        res.status(400).send(exception);
+    }
+})
 
 router.post("/", upload.single("data"), async (req, res) => {
     try{
@@ -33,19 +45,12 @@ router.post("/", upload.single("data"), async (req, res) => {
         console.log(exception);
         res.status(400).send(exception);
     }
-});
-
-router.get("/:id/stream", (req, res) => {
-    videoRepo.getStream(req.params.id);
-    res.status(200).send();
 })
 
-router.patch("/:id", (req, res) => {
-    videoRepo.update()
-});
-
 router.delete("/:id", async (req, res) => {
-    await videoRepo.delete(req.params.id);
+    console.log(req.params.id);
+    let dbResponse = await videoRepo.delete(req.params.id);
+    console.log(dbResponse);
     res.status(200).send();
 });
 

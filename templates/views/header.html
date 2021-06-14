@@ -4,7 +4,10 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="/global/javascript/jquery-3.6.0.min.js"></script>
+        <script src="/global/javascript/utilityFunctions.js"></script>
+        <script src="/global/javascript/modal.js"></script>
+        <script src="/global/javascript/login.js"></script>
         <link rel="stylesheet" type="text/css" href="/clientLibraries/tailwind.css"/>
         <link rel="stylesheet" type="text/css" href="/global/fonts/fonts.css"/>
         <link rel="stylesheet" type="text/css" href="/global/globalStyling.css"/>
@@ -12,4 +15,7 @@
     </head>
     <body class="m-0 p-0">
         <div class="min-h-screen flex">
+            <div id="modalScreen" class="z-50 fixed hidden h-screen w-screen bg-blue-900 bg-opacity-25">
+                <div id="modalContent" class="flex h-full justify-center items-center"></div>
+            </div>
     
