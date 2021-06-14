@@ -20,8 +20,9 @@ class StreamPlayer extends EventTarget{
                     let chunk = this.arrayOfBlobs.shift();
                     console.log(chunk)
                     try{
-                        this.sourceBuffer.appendBuffer(chunk.video);
+                        this.sourceBuffer.appendBuffer(chunk.data);
                     }catch(exception){
+                        this.arrayOfBlobs.unshift(chunk);
                         console.log(exception);
                     }
                 }
@@ -40,7 +41,9 @@ class StreamPlayer extends EventTarget{
                 this.dispatchEvent(new Event("videoChanged"));
             } 
             //sends event when video buffer is running out
-            this.totalTime - 1 < currentTime && this.dispatchEvent(new Event("runningOut"))
+            if(this.totalTime - 3 < currentTime){
+                this.dispatchEvent(new Event("runningOut"))
+            }
         });
     }
 
@@ -50,10 +53,9 @@ class StreamPlayer extends EventTarget{
         let endTime = this.totalTime += video.duration;
 
         this.playlist.push({id: video.id, duration: video.duration, startTime:startTime, endTime:endTime, date:video.date});
+        this.arrayOfBlobs.push(video);
         if (this.mediaSource.readyState === "open" && this.sourceBuffer && this.sourceBuffer.updating === false ){
-            this.sourceBuffer.appendBuffer(video.data);
-        }else{
-            this.arrayOfBlobs.push(video);
+            this.sourceBuffer.appendBuffer(this.arrayOfBlobs.shift().data);
         }
     }
 }

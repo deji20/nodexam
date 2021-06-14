@@ -81,11 +81,20 @@ $(document).ready( async () => {
     streamPlayer.addEventListener("ready", () => {
         socket.emit("getBatch");
         socket.emit("nextVid");
+        let updating = false;
         //requests new video when buffer is nearing end
-        streamPlayer.addEventListener("runningOut", () => socket.emit("nextVid"));
+        streamPlayer.addEventListener("runningOut", () => {
+            if(!updating){
+                socket.emit("nextVid");
+                updating = true;
+            }
+        });
     
-        socket.on("video", (video) => streamPlayer.addVideo(video));
-        streamPlayer.addEventListener("ended", () => {console.log("ended");socket.emit("nextVid")})
+        socket.on("video", (video) => {
+            streamPlayer.addVideo(video)
+            updating = false;
+        });
+        //streamPlayer.addEventListener("ended", () => {console.log("ended");socket.emit("nextVid")})
         streamPlayer.addEventListener("videoChanged", () => {
             toggleFocusThumbnail(streamPlayer.currentVideo);
         })
